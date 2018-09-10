@@ -47,9 +47,13 @@ namespace xd {
 
         size_t size() const noexcept;
 
+        size_t capacity() const noexcept;
+
         bool empty() const noexcept;
 
         size_t max_size() const noexcept;
+
+        void shrink_to_fit();
     protected:
 
     private:
@@ -57,7 +61,7 @@ namespace xd {
         size_t raw_size;
         //! Current capacity 
         //!(capacity >= size to prevent continuously allocating)
-        size_t capacity;
+        size_t _capacity;
         //! Array containing the data
         T* data;
     };
@@ -67,7 +71,7 @@ namespace xd {
     template<typename T>
     vector<T>::vector():
     raw_size(0),
-    capacity(0),
+    _capacity(0),
     data(nullptr) {
     }
 
@@ -108,7 +112,7 @@ namespace xd {
 
     template<typename T>
     void vector<T>::reserve(size_t cap) {
-        if(cap <= capacity) {
+        if(cap <= _capacity) {
             return;
         }
         T* new_data = new T[cap];
@@ -117,14 +121,14 @@ namespace xd {
             delete[] data;
         }
         data = new_data;
-        capacity = cap;
+        _capacity = cap;
     }
 
     template<typename T> 
     void vector<T>::push_back(const T& value) {
-        if((raw_size + 1) > capacity) {
+        if((raw_size + 1) > _capacity) {
             // Double rate growth factor just to be simple
-            size_t new_size = capacity==0 ? 1 : capacity * 2; 
+            size_t new_size = _capacity==0 ? 1 : _capacity * 2; 
             reserve(new_size);
         }
         data[raw_size] = value;
@@ -158,8 +162,13 @@ namespace xd {
     }
 
     template<typename T>
+    size_t vector<T>::capacity() const noexcept {
+        return _capacity;
+    }
+
+    template<typename T>
     size_t vector<T>::max_size() const noexcept {
-        std::numeric_limits<size_t>::max();
+        return std::numeric_limits<size_t>::max();
     }
 
     template<typename T>
@@ -171,6 +180,14 @@ namespace xd {
     void vector<T>::clear() {
         delete[] data;
         raw_size = 0;
+    }
+
+    template<typename T>
+    void vector<T>::shrink_to_fit() {
+        for(int i=raw_size; i<_capacity; i++) {
+            delete (data+i);
+        }
+        _capacity = raw_size;
     }
 }
 
