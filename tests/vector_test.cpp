@@ -71,6 +71,11 @@ int main() {
         assert(int_list2[i]==i, "Int list value is wrong! Index: " + 
                 std::to_string(i)+" value: " + std::to_string(int_list2[i]));
     }
+
+    for(const auto i:int_list2) {
+        assert(int_list2[i]==i, "Iterators don't work: " + 
+                std::to_string(i)+" value: " + std::to_string(int_list2[i]));
+    }
     
     int_list2 = {2,2,2,2,2};
     for(int i=0; i<int_list2.size(); i++) {

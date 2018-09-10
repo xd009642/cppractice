@@ -23,7 +23,7 @@ namespace xd {
         // default constructor
         vector();
         // Fill with a given value
-        vector(size_t count, const T& value = T());
+        vector(size_t count, const_reference value = T());
 
         vector(vector<T>::const_iterator first, vector<T>::const_iterator last);
 
@@ -35,11 +35,13 @@ namespace xd {
             
         void reserve(size_t capacity);
 
-        void push_back(const T& value);
+        void push_back(const_reference value);
 
         void clear();
 
         reference operator[](size_t index);
+        
+        const_reference operator[](size_t index) const;
 
         reference at(size_t index);
 
@@ -54,6 +56,22 @@ namespace xd {
         size_t max_size() const noexcept;
 
         void shrink_to_fit();
+
+        pointer data() noexcept;
+
+        const_pointer data() const noexcept;
+
+        iterator begin() noexcept;
+
+        const_iterator begin() const noexcept;
+
+        const_iterator cbegin() const noexcept;
+
+        iterator end() noexcept;
+
+        const_iterator end() const noexcept;
+
+        const_iterator cend() const noexcept;
     protected:
 
     private:
@@ -63,7 +81,7 @@ namespace xd {
         //!(capacity >= size to prevent continuously allocating)
         size_t _capacity;
         //! Array containing the data
-        T* data;
+        T* _data;
     };
 
 
@@ -72,7 +90,7 @@ namespace xd {
     vector<T>::vector():
     raw_size(0),
     _capacity(0),
-    data(nullptr) {
+    _data(nullptr) {
     }
 
     template<typename T>
@@ -116,11 +134,11 @@ namespace xd {
             return;
         }
         T* new_data = new T[cap];
-        if(data != nullptr) {
-            memcpy(new_data, data, raw_size);
-            delete[] data;
+        if(_data != nullptr) {
+            memcpy(new_data, _data, raw_size);
+            delete[] _data;
         }
-        data = new_data;
+        _data = new_data;
         _capacity = cap;
     }
 
@@ -131,7 +149,7 @@ namespace xd {
             size_t new_size = _capacity==0 ? 1 : _capacity * 2; 
             reserve(new_size);
         }
-        data[raw_size] = value;
+        _data[raw_size] = value;
         raw_size++;
     }
 
@@ -141,11 +159,16 @@ namespace xd {
     }
 
     template<typename T>
+    const T& vector<T>::operator[](size_t i) const {
+        return at(i);
+    }
+
+    template<typename T>
     T& vector<T>::at(size_t i) {
         if(!(i < raw_size)) {
             throw std::out_of_range("Attempted to access element out of range");
         }
-        return data[i];
+        return _data[i];
     }
     
     template<typename T>
@@ -153,7 +176,7 @@ namespace xd {
         if(!(i < raw_size)) {
             throw std::out_of_range("Attempted to access element out of range");
         }
-        return data[i];
+        return _data[i];
     }
 
     template<typename T> 
@@ -178,16 +201,56 @@ namespace xd {
 
     template<typename T> 
     void vector<T>::clear() {
-        delete[] data;
+        delete[] _data;
         raw_size = 0;
     }
 
     template<typename T>
     void vector<T>::shrink_to_fit() {
         for(int i=raw_size; i<_capacity; i++) {
-            delete (data+i);
+            delete (_data+i);
         }
         _capacity = raw_size;
+    }
+
+    template<typename T>
+    T* vector<T>::data() noexcept {
+        return _data;
+    }
+
+    template<typename T>
+    const T* vector<T>::data() const noexcept {
+        return _data;
+    }
+
+    template<typename T>
+    T* vector<T>::begin() noexcept {
+        return data();
+    }
+
+    template<typename T>
+    const T* vector<T>::begin() const noexcept {
+        return data();
+    }
+
+    template<typename T>
+    const T* vector<T>::cbegin() const noexcept {
+        return data();
+    }
+
+    template<typename T>
+    T* vector<T>::end() noexcept {
+        return _data + raw_size;
+    }
+
+    template<typename T>
+    const T* vector<T>::end() const noexcept {
+        return _data + raw_size;
+    }
+
+    template<typename T>
+    const T* vector<T>::cend() const noexcept {
+        return _data + raw_size;
     }
 }
 
