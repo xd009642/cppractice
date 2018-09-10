@@ -39,6 +39,11 @@ void check_dtors() {
     assert(count_dtors::count == 0, "Too many deletes! "+ std::to_string(count_dtors::count));
 }
 
+void test_emplace_back() {
+    xd::vector<std::string> list;
+    list.emplace_back(3, 'C');
+    assert(list[0] == "CCC", "Emplace back doesn't work");
+}
 
 int main() {
     xd::vector<uint32_t> int_list((size_t)10, 45);
@@ -71,16 +76,19 @@ int main() {
         assert(int_list2[i]==i, "Int list value is wrong! Index: " + 
                 std::to_string(i)+" value: " + std::to_string(int_list2[i]));
     }
-
+    size_t count =0;
     for(const auto i:int_list2) {
+        count++;
         assert(int_list2[i]==i, "Iterators don't work: " + 
                 std::to_string(i)+" value: " + std::to_string(int_list2[i]));
     }
-    
+    assert(count == int_list2.size(), "Didn't iterate over all elements");
     int_list2 = {2,2,2,2,2};
     for(int i=0; i<int_list2.size(); i++) {
         assert(int_list2[i]==2, "Failed to assign from initializer_list");
     }
+
+    test_emplace_back();
 
     std::cout<<"Test passed"<<std::endl;
     return 0;

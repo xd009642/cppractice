@@ -37,6 +37,9 @@ namespace xd {
 
         void push_back(const_reference value);
 
+        template<typename... Args>
+        void emplace_back(Args&&... args);
+
         void clear();
 
         reference operator[](size_t index);
@@ -46,6 +49,14 @@ namespace xd {
         reference at(size_t index);
 
         const_reference at(size_t index) const;
+
+        reference front();
+
+        const_reference front() const;
+
+        reference back();
+
+        const_reference back() const;
 
         size_t size() const noexcept;
 
@@ -72,6 +83,18 @@ namespace xd {
         const_iterator end() const noexcept;
 
         const_iterator cend() const noexcept;
+        
+        iterator rbegin() noexcept;
+
+        const_iterator rbegin() const noexcept;
+
+        const_iterator crbegin() const noexcept;
+
+        iterator rend() noexcept;
+
+        const_iterator rend() const noexcept;
+
+        const_iterator crend() const noexcept;
     protected:
 
     private:
@@ -142,6 +165,18 @@ namespace xd {
         _capacity = cap;
     }
 
+    template<typename T>
+    template<typename... Args>
+    void vector<T>::emplace_back(Args&&... args) {
+        if((raw_size + 1) > _capacity) {
+            // Double rate growth factor just to be simple
+            size_t new_size = _capacity==0 ? 1 : _capacity * 2; 
+            reserve(new_size);
+        }
+        _data[raw_size] = std::move(T(std::forward<Args>(args)...));
+        raw_size++;
+    }
+
     template<typename T> 
     void vector<T>::push_back(const T& value) {
         if((raw_size + 1) > _capacity) {
@@ -177,6 +212,26 @@ namespace xd {
             throw std::out_of_range("Attempted to access element out of range");
         }
         return _data[i];
+    }
+
+    template<typename T>
+    const T& vector<T>::front() const {
+        return at(0);
+    }
+
+    template<typename T>
+    T& vector<T>::front() {
+        return at(0);
+    }
+
+    template<typename T>
+    const T& vector<T>::back() const {
+        return at(raw_size-1);
+    }
+
+    template<typename T>
+    T& vector<T>::back() {
+        return at(raw_size-1);
     }
 
     template<typename T> 
@@ -230,7 +285,7 @@ namespace xd {
 
     template<typename T>
     const T* vector<T>::begin() const noexcept {
-        return data();
+        return cbegin();
     }
 
     template<typename T>
@@ -245,12 +300,42 @@ namespace xd {
 
     template<typename T>
     const T* vector<T>::end() const noexcept {
-        return _data + raw_size;
+        return cend();
     }
 
     template<typename T>
     const T* vector<T>::cend() const noexcept {
         return _data + raw_size;
+    }
+
+    template<typename T>
+    T* vector<T>::rbegin() noexcept {
+        return data() - 1;
+    }
+
+    template<typename T>
+    const T* vector<T>::rbegin() const noexcept {
+        return crbegin();
+    }
+
+    template<typename T>
+    const T* vector<T>::crbegin() const noexcept {
+        return data() - 1;
+    }
+
+    template<typename T>
+    T* vector<T>::rend() noexcept {
+        return _data + raw_size - 1;
+    }
+
+    template<typename T>
+    const T* vector<T>::rend() const noexcept {
+        return crend();
+    }
+
+    template<typename T>
+    const T* vector<T>::crend() const noexcept {
+        return _data + raw_size - 1;
     }
 }
 
