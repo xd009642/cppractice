@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <limits>
 
+
 namespace xd {
 
     template<typename T> 
@@ -39,6 +40,8 @@ namespace xd {
 
         template<typename... Args>
         void emplace_back(Args&&... args);
+
+        iterator insert(const_iterator pos, const T& value);
 
         void clear();
 
@@ -96,7 +99,9 @@ namespace xd {
 
         const_iterator crend() const noexcept;
     protected:
-
+        size_t next_capacity() const {
+            return _capacity==0?1:_capacity*2;
+        }
     private:
         //! Current size of the vector
         size_t raw_size;
@@ -158,7 +163,7 @@ namespace xd {
         }
         T* new_data = new T[cap];
         if(_data != nullptr) {
-            memcpy(new_data, _data, raw_size);
+            memcpy(new_data, _data, raw_size*sizeof(T));
             delete[] _data;
         }
         _data = new_data;
@@ -170,8 +175,7 @@ namespace xd {
     void vector<T>::emplace_back(Args&&... args) {
         if((raw_size + 1) > _capacity) {
             // Double rate growth factor just to be simple
-            size_t new_size = _capacity==0 ? 1 : _capacity * 2; 
-            reserve(new_size);
+            reserve(next_capacity());
         }
         _data[raw_size] = std::move(T(std::forward<Args>(args)...));
         raw_size++;
@@ -180,12 +184,28 @@ namespace xd {
     template<typename T> 
     void vector<T>::push_back(const T& value) {
         if((raw_size + 1) > _capacity) {
-            // Double rate growth factor just to be simple
-            size_t new_size = _capacity==0 ? 1 : _capacity * 2; 
-            reserve(new_size);
+            reserve(next_capacity());
         }
         _data[raw_size] = value;
         raw_size++;
+    }
+
+    template<typename T>
+    T* vector<T>::insert(const T* pos, const T& value) {
+        if(pos == end()) {
+            push_back(value);
+            return rend();
+        }
+        // If we work out index after reserve pointer distance is wrong!
+        size_t index = std::distance(cbegin(), pos);
+        if((raw_size + 1) > _capacity) {
+            reserve(next_capacity());
+        }
+        memmove(_data+index+1, _data+index, (raw_size-index)*sizeof(T));
+        _data[index] = value;
+        
+        raw_size++;
+        return _data+index;
     }
 
     template<typename T>

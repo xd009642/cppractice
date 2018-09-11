@@ -45,6 +45,16 @@ void test_emplace_back() {
     assert(list[0] == "CCC", "Emplace back doesn't work");
 }
 
+void test_insert() {
+    xd::vector<uint32_t> list = {1, 2};
+    list.insert(list.begin(), 0);
+    uint32_t curr = 0;
+    for(const auto& i: list) {
+        assert(i==curr, "Insert failed "+std::to_string(i));
+        curr++;
+    }
+}
+
 int main() {
     xd::vector<uint32_t> int_list((size_t)10, 45);
     uint32_t test = int_list.at(2);
@@ -89,6 +99,8 @@ int main() {
     }
 
     test_emplace_back();
+
+    test_insert();
 
     std::cout<<"Test passed"<<std::endl;
     return 0;
