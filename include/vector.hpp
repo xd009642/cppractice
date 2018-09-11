@@ -25,9 +25,7 @@ namespace xd {
         vector();
         // Fill with a given value
         vector(size_t count, const_reference value = T());
-
         vector(vector<T>::const_iterator first, vector<T>::const_iterator last);
-
         vector(std::initializer_list<T> l);
 
         ~vector();
@@ -43,30 +41,26 @@ namespace xd {
 
         iterator insert(const_iterator pos, const T& value);
 
+        void resize(size_t count);
+        void resize(size_t count, const T& value);
+
         void clear();
 
         reference operator[](size_t index);
-        
         const_reference operator[](size_t index) const;
 
         reference at(size_t index);
-
         const_reference at(size_t index) const;
 
         reference front();
-
         const_reference front() const;
 
         reference back();
-
         const_reference back() const;
 
         size_t size() const noexcept;
-
         size_t capacity() const noexcept;
-
         bool empty() const noexcept;
-
         size_t max_size() const noexcept;
 
         void shrink_to_fit();
@@ -76,27 +70,19 @@ namespace xd {
         const_pointer data() const noexcept;
 
         iterator begin() noexcept;
-
         const_iterator begin() const noexcept;
-
         const_iterator cbegin() const noexcept;
 
         iterator end() noexcept;
-
         const_iterator end() const noexcept;
-
         const_iterator cend() const noexcept;
         
         iterator rbegin() noexcept;
-
         const_iterator rbegin() const noexcept;
-
         const_iterator crbegin() const noexcept;
 
         iterator rend() noexcept;
-
         const_iterator rend() const noexcept;
-
         const_iterator crend() const noexcept;
     protected:
         size_t next_capacity() const {
@@ -206,6 +192,29 @@ namespace xd {
         
         raw_size++;
         return _data+index;
+    }
+    
+    template<typename T>
+    void vector<T>::resize(size_t count) {
+        resize(count, T());
+    }
+    
+    template<typename T>
+    void vector<T>::resize(size_t count, const T& value) {
+        if(count < raw_size) {
+            for(size_t i=count; i<raw_size; i++) {
+                delete(_data[i]);
+                _data[i] = nullptr;
+            }
+            raw_size = count;
+        } else {
+            if(_capacity < count) {
+                reserve(count);
+            }
+            for(size_t i=raw_size; i<count; i++) {
+                push_back(value);
+            }
+        }
     }
 
     template<typename T>
