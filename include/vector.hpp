@@ -40,12 +40,20 @@ namespace xd {
 
         template<typename... Args>
         reference emplace_back(Args&&... args);
+        
+        template<typename... Args>
+        iterator emplace(const_iterator pos, Args&&... args);
 
         iterator insert(const_iterator pos, const T& value);
         iterator insert(const_iterator pos, const T&& value);
         iterator insert(const_iterator pos, size_t count, const T& value);
         iterator insert(const_iterator pos, const_iterator first, const_iterator last);
         iterator insert(const_iterator pos, std::initializer_list<T> il);
+
+        iterator erase(const iterator pos);
+        iterator erase(const_interator first, const_iterator last);
+
+        void pop_back();
 
         void resize(size_t count);
         void resize(size_t count, const T& value);
@@ -269,6 +277,14 @@ namespace xd {
     template<typename T>
     T* vector<T>::insert(const T* pos, std::initializer_list<T> il) {
         return insert(pos, il.begin(), il.end());
+    }
+
+    template<typename T>
+    void vector<T>::pop_back() {
+        if(!empty()) {
+            delete(_data[raw_size-1]);
+            raw_size--;
+        }
     }
 
     template<typename T>
