@@ -36,6 +36,7 @@ namespace xd {
         void reserve(size_t capacity);
 
         void push_back(const_reference value);
+        void push_back(const T&& value);
 
         template<typename... Args>
         reference emplace_back(Args&&... args);
@@ -183,6 +184,15 @@ namespace xd {
             reserve(next_capacity());
         }
         _data[raw_size] = value;
+        raw_size++;
+    }
+
+    template<typename T> 
+    void vector<T>::push_back(const T&& value) {
+        if((raw_size + 1) > _capacity) {
+            reserve(next_capacity());
+        }
+        _data[raw_size] = std::move(value);
         raw_size++;
     }
 
