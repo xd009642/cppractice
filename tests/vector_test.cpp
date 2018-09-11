@@ -1,6 +1,8 @@
-#include "vector.hpp"
 #include <iostream>
 #include <string>
+
+#include "vector.hpp"
+
 
 class count_dtors {
 public:
@@ -50,10 +52,28 @@ void test_insert() {
     list.insert(list.begin(), 0);
     uint32_t curr = 0;
     for(const auto& i: list) {
-        assert(i==curr, "Insert failed "+std::to_string(i));
+        assert(i==curr, "Insert failed "+std::to_string(i)+" expected "+std::to_string(curr));
         curr++;
     }
+    
+    xd::vector<uint32_t> list2 = {1, 1};
+    list2.insert(list2.begin()+1, 5, 0);
+    assert(list2.front()==1, "Mass insert front wrong");
+    assert(list2.back()==1, "Mass insert back wrong");
+    for(int i=1; i<list2.size()-1; i++) {
+        assert(list2[i]==0, "Inserted element "+std::to_string(i-1)+" is wrong");
+    }
+    std::cout<<"insert initializer list"<<std::endl;
+    xd::vector<uint32_t> list3 = {1, 1};
+    list3.insert(list3.begin()+1, {0, 0, 0, 0, 0});
+    
+    assert(list3.front()==1, "Mass insert front wrong");
+    assert(list3.back()==1, "Mass insert back wrong");
+    for(int i=1; i<list3.size()-1; i++) {
+        assert(list3[i]==0, "Inserted element "+std::to_string(i-1)+" is wrong");
+    }
 }
+
 
 int main() {
     xd::vector<uint32_t> int_list((size_t)10, 45);

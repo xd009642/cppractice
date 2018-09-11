@@ -24,8 +24,9 @@ namespace xd {
         // default constructor
         vector();
         // Fill with a given value
-        vector(size_t count, const_reference value = T());
-        vector(vector<T>::const_iterator first, vector<T>::const_iterator last);
+        vector(size_t count, const_reference value);
+        vector(size_t count);
+        vector(const_iterator first, const_iterator last);
         vector(std::initializer_list<T> l);
 
         ~vector();
@@ -37,9 +38,13 @@ namespace xd {
         void push_back(const_reference value);
 
         template<typename... Args>
-        void emplace_back(Args&&... args);
+        reference emplace_back(Args&&... args);
 
         iterator insert(const_iterator pos, const T& value);
+        iterator insert(const_iterator pos, const T&& value);
+        iterator insert(const_iterator pos, size_t count, const T& value);
+        iterator insert(const_iterator pos, const_iterator first, const_iterator last);
+        iterator insert(const_iterator pos, std::initializer_list<T> il);
 
         void resize(size_t count);
         void resize(size_t count, const T& value);
@@ -116,6 +121,10 @@ namespace xd {
     }
 
     template<typename T>
+    vector<T>::vector(size_t count):vector(count, T()) {
+    }
+
+    template<typename T>
     vector<T>::vector(vector<T>::const_iterator begin, vector<T>::const_iterator end):vector(){
         reserve(std::distance(begin, end));
         for(auto it=begin; it != end; it++) {
@@ -158,13 +167,14 @@ namespace xd {
 
     template<typename T>
     template<typename... Args>
-    void vector<T>::emplace_back(Args&&... args) {
+    T& vector<T>::emplace_back(Args&&... args) {
         if((raw_size + 1) > _capacity) {
             // Double rate growth factor just to be simple
             reserve(next_capacity());
         }
         _data[raw_size] = std::move(T(std::forward<Args>(args)...));
         raw_size++;
+        return _data[raw_size-1];
     }
 
     template<typename T> 
@@ -194,6 +204,63 @@ namespace xd {
         return _data+index;
     }
     
+    template<typename T>
+    T* vector<T>::insert(const T* pos, const T&& value) {
+        if(pos == end()) {
+            push_back(value);
+            return rend();
+        }
+        // If we work out index after reserve pointer distance is wrong!
+        size_t index = std::distance(cbegin(), pos);
+        if((raw_size + 1) > _capacity) {
+            reserve(next_capacity());
+        }
+        memmove(_data+index+1, _data+index, (raw_size-index)*sizeof(T));
+        _data[index] = std::move(value);
+        
+        raw_size++;
+        return _data+index;
+    }
+    
+    template<typename T>
+    T* vector<T>::insert(const T* pos, size_t count, const T& value) {
+        if(pos == end()) {
+            push_back(value);
+            return rend();
+        }
+        // If we work out index after reserve pointer distance is wrong!
+        size_t index = std::distance(cbegin(), pos);
+        const size_t required_size = raw_size + count;
+        if(required_size > _capacity) {
+            if(required_size > next_capacity()) {
+                reserve(required_size);
+            } else {
+                reserve(next_capacity());
+            }
+        }
+        memmove(_data+index+count, _data+index, (raw_size-index)*sizeof(T));
+        for(size_t i=0; i<count; i++) { 
+            _data[index+i] = value;
+        }
+        raw_size += count;
+        return _data+index;
+    }
+
+    template<typename T>
+    T* vector<T>::insert(const T* pos, const T* first, const T* last) {
+        size_t index = std::distance(cbegin(), pos);
+        size_t n_elem = std::distance(first, last);
+        for(size_t i=0; i<n_elem; i++) {
+            insert(begin()+index+i, first[i]);
+        }
+        return begin() + index;
+    }
+
+    template<typename T>
+    T* vector<T>::insert(const T* pos, std::initializer_list<T> il) {
+        return insert(pos, il.begin(), il.end());
+    }
+
     template<typename T>
     void vector<T>::resize(size_t count) {
         resize(count, T());
