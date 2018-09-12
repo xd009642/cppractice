@@ -122,6 +122,14 @@ int main() {
 
     test_insert();
 
+    xd::vector<int> erasetest = {0, 1, 1, 2, 3};
+    erasetest.erase(erasetest.begin()+1);
+    int curr = 0;
+    for(const auto& x: erasetest) {
+        assert(x==curr, "Erase failed "+std::to_string(curr));
+        curr++;
+    }
+
     std::cout<<"Test passed"<<std::endl;
     return 0;
 }

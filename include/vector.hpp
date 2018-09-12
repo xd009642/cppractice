@@ -50,8 +50,8 @@ namespace xd {
         iterator insert(const_iterator pos, const_iterator first, const_iterator last);
         iterator insert(const_iterator pos, std::initializer_list<T> il);
 
-        iterator erase(const iterator pos);
-        iterator erase(const_interator first, const_iterator last);
+        iterator erase(const_iterator pos);
+        iterator erase(const_iterator first, const_iterator last);
 
         void pop_back();
 
@@ -185,6 +185,12 @@ namespace xd {
         raw_size++;
         return _data[raw_size-1];
     }
+    
+    template<typename T>
+    template<typename... Args>
+    T* vector<T>::emplace(const T* pos, Args&&... args) {
+        insert(pos, T(std::forward<Args>(args)...));
+    }
 
     template<typename T> 
     void vector<T>::push_back(const T& value) {
@@ -278,11 +284,29 @@ namespace xd {
     T* vector<T>::insert(const T* pos, std::initializer_list<T> il) {
         return insert(pos, il.begin(), il.end());
     }
+    
+    template<typename T>
+    T* vector<T>::erase(const T* pos) {
+        const size_t index = std::distance(cbegin(), pos);
+        if(index == raw_size - 1) {
+            raw_size--;
+            return rbegin();
+        } else {
+            memmove(_data+index, _data+index+1, (raw_size-index)*sizeof(T));
+            raw_size--;
+            return _data+index;
+        }
+    }
+
+    template<typename T>
+    T* vector<T>::erase(const T* first, const T* last) {
+
+    }
 
     template<typename T>
     void vector<T>::pop_back() {
         if(!empty()) {
-            delete(_data[raw_size-1]);
+            delete(_data + raw_size - 1);
             raw_size--;
         }
     }
@@ -296,7 +320,7 @@ namespace xd {
     void vector<T>::resize(size_t count, const T& value) {
         if(count < raw_size) {
             for(size_t i=count; i<raw_size; i++) {
-                delete(_data[i]);
+                delete(_data + i);
                 _data[i] = nullptr;
             }
             raw_size = count;
