@@ -358,8 +358,7 @@ namespace xd {
     void vector<T>::resize(size_t count, const T& value) {
         if(count < raw_size) {
             for(size_t i=count; i<raw_size; i++) {
-                _data[i]->~T();
-                _data[i] = nullptr;
+                _data[i].~T();
             }
             raw_size = count;
         } else {

@@ -146,4 +146,11 @@ int main() {
     }
     assert(curr == 5, "Elements lost during swap");
     return 0;
+
+    swapped.resize(5, 0);
+    for(int i=0; i<5; i++) {
+        assert(swapped[i]==0, "Resize (growth) failed");
+    }
+    swapped.resize(1);
+    assert(swapped[0]==0 && swapped.size()==1, "Resize shrink failed");
 }
