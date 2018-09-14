@@ -129,6 +129,10 @@ int main() {
         assert(x==curr, "Erase failed "+std::to_string(curr));
         curr++;
     }
+    
+    erasetest.erase(erasetest.begin(), erasetest.end());
+
+    assert(erasetest.empty(), "Not all elements were erased!");
 
     std::cout<<"Test passed"<<std::endl;
     return 0;

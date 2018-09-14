@@ -288,6 +288,7 @@ namespace xd {
     template<typename T>
     T* vector<T>::erase(const T* pos) {
         const size_t index = std::distance(cbegin(), pos);
+        _data[index].~T();
         if(index == raw_size - 1) {
             raw_size--;
             return rbegin();
@@ -300,7 +301,21 @@ namespace xd {
 
     template<typename T>
     T* vector<T>::erase(const T* first, const T* last) {
+        const size_t len = std::distance(first, last);
+        const size_t index = std::distance(cbegin(), first);
+        const size_t end_index = std::distance(cbegin(), last);
+        
+        T* pos = &_data[index];
+        
+        if(first != last) {
+            for( ; pos != last; pos++) {
+                pos->~T();
+            }
+            memmove(pos, last, raw_size - end_index);
+            raw_size -= len;
+        }
 
+        return pos;
     }
 
     template<typename T>
