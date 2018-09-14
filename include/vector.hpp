@@ -32,7 +32,11 @@ namespace xd {
         ~vector();
 
         vector& operator=(std::initializer_list<T> il);
-            
+        
+        void assign(size_t count, const_reference value);
+        void assign(const_iterator first, const_iterator last);
+        void assign(std::initializer_list<T> il);
+
         void reserve(size_t capacity);
 
         void push_back(const_reference value);
@@ -123,10 +127,7 @@ namespace xd {
 
     template<typename T>
     vector<T>::vector(size_t count, const T& value):vector() {
-        reserve(count);
-        for(size_t i=0; i<count; i++) {
-            push_back(value);
-        }
+        assign(count, value);
     }
 
     template<typename T>
@@ -135,10 +136,7 @@ namespace xd {
 
     template<typename T>
     vector<T>::vector(vector<T>::const_iterator begin, vector<T>::const_iterator end):vector(){
-        reserve(std::distance(begin, end));
-        for(auto it=begin; it != end; it++) {
-            push_back(*it);
-        }
+        assign(begin, end);
     }
 
     template<typename T>
@@ -148,6 +146,29 @@ namespace xd {
     template<typename T>
     vector<T>::~vector() {
         clear();
+    }
+
+    template<typename T>
+    void vector<T>::assign(size_t count, const T& value) {
+        clear();
+        reserve(count);
+        for(size_t i=0; i<count; i++) {
+            push_back(value);
+        }
+    }
+
+    template<typename T>
+    void vector<T>::assign(vector<T>::const_iterator first, vector<T>::const_iterator last) {
+        clear();
+        reserve(std::distance(first, last));
+        for(auto it=first; it!=last; it++) {
+            push_back(*it);
+        }
+    }
+
+    template<typename T> 
+    void vector<T>::assign(std::initializer_list<T> il) {
+        assign(il.begin(), il.end());
     }
 
     template<typename T>
