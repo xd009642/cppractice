@@ -306,7 +306,7 @@ namespace xd {
     template<typename T>
     void vector<T>::pop_back() {
         if(!empty()) {
-            delete(_data + raw_size - 1);
+            _data[raw_size - 1]->~T();
             raw_size--;
         }
     }
@@ -320,7 +320,7 @@ namespace xd {
     void vector<T>::resize(size_t count, const T& value) {
         if(count < raw_size) {
             for(size_t i=count; i<raw_size; i++) {
-                delete(_data + i);
+                _data[i]->~T();
                 _data[i] = nullptr;
             }
             raw_size = count;
@@ -408,9 +408,10 @@ namespace xd {
 
     template<typename T>
     void vector<T>::shrink_to_fit() {
-        for(int i=raw_size; i<_capacity; i++) {
-            delete (_data+i);
-        }
+        T* new_data = new T[raw_size];
+        memcpy(new_data, _data, raw_size*sizeof(T));
+        delete[] _data;
+        _data = new_data;
         _capacity = raw_size;
     }
 
