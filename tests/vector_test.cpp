@@ -135,5 +135,15 @@ int main() {
     assert(erasetest.empty(), "Not all elements were erased!");
 
     std::cout<<"Test passed"<<std::endl;
+
+    xd::vector<int> swapped = {0,1,2,3,4};
+    swapped.swap(erasetest);
+    assert(swapped.empty(), "Swap failed to change caller");
+    curr = 0;
+    for(const auto& x: erasetest) {
+        assert(x==curr, "Failed to swap arg");
+        curr++;
+    }
+    assert(curr == 5, "Elements lost during swap");
     return 0;
 }

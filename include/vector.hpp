@@ -87,6 +87,8 @@ namespace xd {
 
         const_pointer data() const noexcept;
 
+        void swap(vector<T>& other) noexcept;
+
         iterator begin() noexcept;
         const_iterator begin() const noexcept;
         const_iterator cbegin() const noexcept;
@@ -449,6 +451,21 @@ namespace xd {
         delete[] _data;
         _data = new_data;
         _capacity = raw_size;
+    }
+    
+    template<typename T>
+    void vector<T>::swap(vector<T>& other) noexcept {
+        T* tmp_data = _data;
+        _data = other._data;
+        other._data = tmp_data;
+
+        size_t tmp_size = raw_size;
+        raw_size = other.raw_size;
+        other.raw_size = tmp_size;
+
+        tmp_size = _capacity;
+        _capacity = other._capacity;
+        other._capacity = tmp_size;
     }
 
     template<typename T>
