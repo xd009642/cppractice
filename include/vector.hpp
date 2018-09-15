@@ -23,6 +23,8 @@ namespace xd {
 
         // default constructor
         vector();
+        vector(const vector<T>& other);
+        vector(vector<T>&& other) noexcept;
         // Fill with a given value
         vector(size_t count, const_reference value);
         vector(size_t count);
@@ -32,6 +34,8 @@ namespace xd {
         ~vector();
 
         vector& operator=(std::initializer_list<T> il);
+        vector& operator=(const vector<T>& other);
+        vector& operator=(vector<T>&& other) noexcept;
         
         void assign(size_t count, const_reference value);
         void assign(const_iterator first, const_iterator last);
@@ -146,6 +150,24 @@ namespace xd {
     }
 
     template<typename T>
+    vector<T>::vector(const vector<T>& other):vector() {
+        reserve(other.capacity());
+        for(int i=0; i<other.size(); i++) {
+            _data[i] = other[i];
+        }
+        raw_size = other.size();
+    }
+
+    template<typename T>
+    vector<T>::vector(vector<T>&& other) noexcept {
+        reserve(other.capacity());
+        for(int i=0; i<other.size(); i++) {
+            _data[i] = std::move(other[i]);
+        }
+        raw_size = other.size();
+    }
+    
+    template<typename T>
     vector<T>::~vector() {
         clear();
     }
@@ -180,6 +202,28 @@ namespace xd {
         for(auto it=il.begin(); it!=il.end(); it++) {
             push_back(*it);
         }
+        return *this;
+    }
+    
+    template<typename T>
+    vector<T>& vector<T>::operator=(const vector<T>& other) {
+        clear();
+        reserve(other.size());
+        for(int i=0; i<other.size(); i++) {
+            _data[i] = other[i];
+        }
+        raw_size = other.size();
+        return *this;
+    }
+    
+    template<typename T>
+    vector<T>& vector<T>::operator=(vector<T>&& other) noexcept {
+        clear();
+        reserve(other.size());
+        for(int i=0; i<other.size(); i++) {
+            _data[i] = std::move(other[i]);
+        }
+        raw_size = other.size();
         return *this;
     }
 
