@@ -63,7 +63,6 @@ void test_insert() {
     for(int i=1; i<list2.size()-1; i++) {
         assert(list2[i]==0, "Inserted element "+std::to_string(i-1)+" is wrong");
     }
-    std::cout<<"insert initializer list"<<std::endl;
     xd::vector<uint32_t> list3 = {1, 1};
     list3.insert(list3.begin()+1, {0, 0, 0, 0, 0});
     
@@ -72,6 +71,22 @@ void test_insert() {
     for(int i=1; i<list3.size()-1; i++) {
         assert(list3[i]==0, "Inserted element "+std::to_string(i-1)+" is wrong");
     }
+}
+
+void test_comparisons() {
+    xd::vector<uint32_t> one = {0,1,2,3};
+    xd::vector<uint32_t> two = {0,1,2,3};
+
+    assert(one == two, "Vector == failed");
+    assert(one >= two, "Vector >= failed on equal vectors");
+    assert(one <= two, "Vector <= failed on equal vectors");
+
+    one.push_back(4);
+    assert(one != two, "Vector != failed");
+    assert(one > two, "vector > failed");
+    assert(two < one, "vector < failed");
+    assert(one >= two, "vector >= failed on different vectors");
+    assert(two <= one, "vector <= failed on different vectors");
 }
 
 
@@ -153,4 +168,6 @@ int main() {
     }
     swapped.resize(1);
     assert(swapped[0]==0 && swapped.size()==1, "Resize shrink failed");
+
+    test_comparisons();
 }

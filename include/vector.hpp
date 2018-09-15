@@ -122,7 +122,18 @@ namespace xd {
         T* _data;
     };
 
-
+    template<class T>
+    bool operator==(const vector<T>& lhs, const vector<T>& rhs);
+    template<class T>
+    bool operator!=(const vector<T>& lhs, const vector<T>& rhs);
+    template<class T>
+    bool operator<(const vector<T>& lhs, const vector<T>& rhs);
+    template<class T>
+    bool operator<=(const vector<T>& lhs, const vector<T>& rhs);
+    template<class T>
+    bool operator>(const vector<T>& lhs, const vector<T>& rhs);
+    template<class T>
+    bool operator>=(const vector<T>& lhs, const vector<T>& rhs);
 
     template<typename T>
     vector<T>::vector():
@@ -152,7 +163,7 @@ namespace xd {
     template<typename T>
     vector<T>::vector(const vector<T>& other):vector() {
         reserve(other.capacity());
-        for(int i=0; i<other.size(); i++) {
+        for(size_t i=0; i<other.size(); i++) {
             _data[i] = other[i];
         }
         raw_size = other.size();
@@ -161,7 +172,7 @@ namespace xd {
     template<typename T>
     vector<T>::vector(vector<T>&& other) noexcept {
         reserve(other.capacity());
-        for(int i=0; i<other.size(); i++) {
+        for(size_t i=0; i<other.size(); i++) {
             _data[i] = std::move(other[i]);
         }
         raw_size = other.size();
@@ -209,7 +220,7 @@ namespace xd {
     vector<T>& vector<T>::operator=(const vector<T>& other) {
         clear();
         reserve(other.size());
-        for(int i=0; i<other.size(); i++) {
+        for(size_t i=0; i<other.size(); i++) {
             _data[i] = other[i];
         }
         raw_size = other.size();
@@ -220,7 +231,7 @@ namespace xd {
     vector<T>& vector<T>::operator=(vector<T>&& other) noexcept {
         clear();
         reserve(other.size());
-        for(int i=0; i<other.size(); i++) {
+        for(size_t i=0; i<other.size(); i++) {
             _data[i] = std::move(other[i]);
         }
         raw_size = other.size();
@@ -579,6 +590,68 @@ namespace xd {
     template<typename T>
     const T* vector<T>::crend() const noexcept {
         return _data + raw_size - 1;
+    }
+    
+    template<class T>
+    bool operator==(const vector<T>& lhs, const vector<T>& rhs) {
+        if(lhs.size() != rhs.size()) {
+            return false;
+        }
+        for(size_t i=0; i<lhs.size(); i++) {
+            if(lhs[i] != rhs[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    template<class T>
+    bool operator!=(const vector<T>& lhs, const vector<T>& rhs) {
+        return !(lhs == rhs);
+    }
+
+    template<class T>
+    bool operator<(const vector<T>& lhs, const vector<T>& rhs) {
+        size_t min_len = lhs.size()<rhs.size() ? lhs.size() : rhs.size();
+        for(size_t i=0; i<min_len; i++) {
+            if(lhs[i] != rhs[i]) {
+                return lhs[i] < rhs[i];
+            }
+        }
+        return lhs.size() < rhs.size();
+    }
+
+    template<class T>
+    bool operator<=(const vector<T>& lhs, const vector<T>& rhs) {
+        size_t min_len = lhs.size()<rhs.size() ? lhs.size() : rhs.size();
+        for(size_t i=0; i<min_len; i++) {
+            if(lhs[i] != rhs[i]) {
+                return lhs[i] < rhs[i]; // Already know they aren't equal
+            }
+        }
+        return lhs.size() <= rhs.size();
+    }
+
+    template<class T>
+    bool operator>(const vector<T>& lhs, const vector<T>& rhs) {
+        size_t min_len = lhs.size()<rhs.size() ? lhs.size() : rhs.size();
+        for(size_t i=0; i<min_len; i++) {
+            if(lhs[i] != rhs[i]) {
+                return lhs[i] > rhs[i];
+            }
+        }
+        return lhs.size() > rhs.size();
+    }
+
+    template<class T>
+    bool operator>=(const vector<T>& lhs, const vector<T>& rhs) {
+        size_t min_len = lhs.size()<rhs.size() ? lhs.size() : rhs.size();
+        for(size_t i=0; i<min_len; i++) {
+            if(lhs[i] != rhs[i]) {
+                return lhs[i] > rhs[i];
+            }
+        }
+        return lhs.size() >= rhs.size();
     }
 }
 
