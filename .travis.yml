@@ -1,0 +1,8 @@
+dist: trusty
+language: cpp
+
+script:
+    - cd build
+    - cmake -DBUILD_BENCHMARKS=OFF ..
+    - make
+    - ./tests/vector_tests
