@@ -494,7 +494,9 @@ namespace xd {
 
     template<typename T> 
     void vector<T>::clear() {
-        delete[] _data;
+        for(size_t i=0; i<raw_size; i++) {
+            _data[i].~T();
+        }
         raw_size = 0;
     }
 

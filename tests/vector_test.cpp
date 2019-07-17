@@ -17,6 +17,10 @@ public:
     ~count_dtors() {
         count--;
     }
+
+    static void reset() {
+        count = 0;
+    }
 private:
     // Just hear to make sure I don't leak
     std::string foo;
@@ -36,9 +40,13 @@ void check_dtors() {
     xd::vector<count_dtors> list((size_t)2);
     list.clear();
     assert(count_dtors::count == 0, "Leaked object! "+ std::to_string(count_dtors::count));
+    count_dtors::reset();
     list.reserve(10);
     list.clear();
-    assert(count_dtors::count == 0, "Too many deletes! "+ std::to_string(count_dtors::count));
+    // Here as capacity is 2 and goes to 10 we should have created 8 more elements
+    // and the clear shouldn't change capacity so it should show creating 8 and
+    // not destroying any
+    assert(count_dtors::count == 8, "Reserved space inconsistent! "+ std::to_string(count_dtors::count));
 }
 
 void test_emplace_back() {
@@ -160,14 +168,12 @@ int main() {
         curr++;
     }
     assert(curr == 5, "Elements lost during swap");
-    return 0;
-
     swapped.resize(5, 0);
     for(int i=0; i<5; i++) {
         assert(swapped[i]==0, "Resize (growth) failed");
     }
     swapped.resize(1);
     assert(swapped[0]==0 && swapped.size()==1, "Resize shrink failed");
-
     test_comparisons();
+    return 0;
 }
