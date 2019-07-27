@@ -1,0 +1,16 @@
+dist: bionic
+language: cpp
+addons:
+    apt:
+        packages:
+            - cmake-data
+            - cmake
+compiler: 
+    - clang
+    - gcc
+script:
+    - mkdir build
+    - cd build
+    - cmake -DBUILD_BENCHMARKS=OFF ..
+    - make
+    - ./tests/vector_test
