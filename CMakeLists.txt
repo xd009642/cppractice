@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.12)
 
 option(BUILD_BENCHMARKS "Build the benchmarks project" ON)
 option(BUILD_TESTS "Build the tests project" ON)

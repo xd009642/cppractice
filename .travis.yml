@@ -1,6 +1,14 @@
 dist: trusty
 language: cpp
-
+install: make get-deps
+addons:
+    apt:
+        packages:
+            - cmake-data
+            - cmake
+compiler: 
+    - clang
+    - gcc
 script:
     - cd build
     - cmake -DBUILD_BENCHMARKS=OFF ..
