@@ -1,6 +1,5 @@
 dist: trusty
 language: cpp
-install: make
 addons:
     apt:
         packages:
@@ -10,6 +9,7 @@ compiler:
     - clang
     - gcc
 script:
+    - mkdir build
     - cd build
     - cmake -DBUILD_BENCHMARKS=OFF ..
     - make
