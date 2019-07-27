@@ -180,7 +180,7 @@ namespace xd {
     
     template<typename T>
     vector<T>::~vector() {
-        clear();
+        delete [] _data;
     }
 
     template<typename T>
@@ -399,7 +399,7 @@ namespace xd {
     template<typename T>
     void vector<T>::pop_back() {
         if(!empty()) {
-            _data[raw_size - 1]->~T();
+            _data[raw_size - 1].~T();
             raw_size--;
         }
     }
