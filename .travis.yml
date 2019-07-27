@@ -1,6 +1,6 @@
 dist: trusty
 language: cpp
-install: make get-deps
+install: make
 addons:
     apt:
         packages:
