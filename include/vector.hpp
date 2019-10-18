@@ -267,7 +267,7 @@ namespace xd {
     template<typename T>
     template<typename... Args>
     T* vector<T>::emplace(const T* pos, Args&&... args) {
-        insert(pos, T(std::forward<Args>(args)...));
+        return insert(pos, T(std::forward<Args>(args)...));
     }
 
     template<typename T> 
